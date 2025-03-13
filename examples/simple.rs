@@ -7,7 +7,7 @@ use egui_layout::widgets::text::Text;
 struct App;
 
 impl eframe::App for App {
-    fn update(&mut self, ctx: &Context, frame: &mut egui::Frame) {
+    fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
         CentralPanel::default()
             .frame(egui::Frame {
                 fill: ctx.style().visuals.panel_fill,
@@ -24,7 +24,7 @@ impl eframe::App for App {
                     .with_child(Text::new(
                         {
                             let version = env!("CARGO_PKG_VERSION");
-                            let git_short_sha = env!("GIT_SHA_SHORT");
+                            let git_short_sha = "7642d77";
 
                             format!("v{version} @ {git_short_sha}")
                         }
@@ -54,7 +54,7 @@ impl eframe::App for App {
     }
 }
 
-fn main() -> Result<(), anyhow::Error> {
+fn main() -> Result<(), eframe::Error> {
     let options = eframe::NativeOptions {
         ..Default::default()
     };
@@ -65,5 +65,7 @@ fn main() -> Result<(), anyhow::Error> {
         Box::new(|cc| {
             Ok(Box::new(App))
         }),
-    )
+    )?;
+
+    Ok(())
 }
