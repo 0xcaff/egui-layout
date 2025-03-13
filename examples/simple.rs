@@ -57,10 +57,6 @@ impl eframe::App for App {
                         })
                         .with_child(Text::new(RichText::from("listen for traces")))
                         .with_child(LazyMeasuredWidget::new(
-                            TextEdit::singleline(&mut self.address),
-                            Id::new("address_input"),
-                        ))
-                        .with_child(LazyMeasuredWidget::new(
                             egui::Button::new("listen"),
                             Id::new("listen"),
                         )),
