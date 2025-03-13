@@ -1,17 +1,14 @@
-use egui::{Rect, Ui, Vec2};
 use crate::layout::{Draw, Measure};
+use egui::{Rect, Ui, Vec2};
 
 pub struct LazyMeasuredWidget<W> {
     widget: W,
     id: egui::Id,
 }
 
-impl <W: egui::Widget> LazyMeasuredWidget<W> {
+impl<W: egui::Widget> LazyMeasuredWidget<W> {
     pub fn new(widget: W, id: egui::Id) -> Self {
-        Self {
-            id,
-            widget,
-        }
+        Self { id, widget }
     }
 }
 

@@ -8,7 +8,10 @@ trait DrawDyn {
     fn draw(self: Box<Self>, region: Rect, ui: &mut Ui);
 }
 
-impl<T: Draw + 'static> DrawDyn for T {
+impl<T> DrawDyn for T
+where
+    T: Draw
+{
     fn draw(self: Box<Self>, region: Rect, ui: &mut Ui) {
         (*self).draw(region, ui);
     }
@@ -20,12 +23,16 @@ pub trait Measure {
     fn measure(self, max_size: Vec2, ui: &Ui) -> (Vec2, Self::Measured);
 }
 
-trait MeasureDyn {
-    fn measure(self: Box<Self>, max_size: Vec2, ui: &Ui) -> (Vec2, Box<dyn DrawDyn>);
+trait MeasureDyn<'a> {
+    fn measure(self: Box<Self>, max_size: Vec2, ui: &Ui) -> (Vec2, Box<dyn DrawDyn + 'a>);
 }
 
-impl<T: Measure + 'static> MeasureDyn for T {
-    fn measure(self: Box<Self>, max_size: Vec2, ui: &Ui) -> (Vec2, Box<dyn DrawDyn>) {
+impl<'a, T> MeasureDyn<'a> for T
+where
+    <T as Measure>::Measured: 'a,
+    T: Measure,
+{
+    fn measure(self: Box<Self>, max_size: Vec2, ui: &Ui) -> (Vec2, Box<dyn DrawDyn + 'a>) {
         let (vec, measured) = (*self).measure(max_size, ui);
         (vec, Box::new(measured))
     }
@@ -112,12 +119,12 @@ impl Default for LayoutParams {
     }
 }
 
-pub struct Layout {
+pub struct Layout<'a> {
     params: LayoutParams,
-    children: Vec<Box<dyn MeasureDyn>>,
+    children: Vec<Box<dyn MeasureDyn<'a> + 'a>>,
 }
 
-impl Layout {
+impl<'a> Layout<'a> {
     pub fn new(params: LayoutParams) -> Self {
         Self {
             children: vec![],
@@ -125,14 +132,14 @@ impl Layout {
         }
     }
 
-    pub fn with_child(mut self, child: impl Measure + 'static) -> Self {
+    pub fn with_child(mut self, child: impl Measure + 'a) -> Self {
         self.children.push(Box::new(child));
         self
     }
 }
 
-impl Measure for Layout {
-    type Measured = MeasuredLayout;
+impl<'a> Measure for Layout<'a> {
+    type Measured = MeasuredLayout<'a>;
 
     fn measure(self, max_size: Vec2, ui: &Ui) -> (Vec2, Self::Measured) {
         let child_size = match self.params.direction {
@@ -164,12 +171,12 @@ impl Measure for Layout {
     }
 }
 
-pub struct MeasuredLayout {
+pub struct MeasuredLayout<'a> {
     params: LayoutParams,
-    children: Vec<(Vec2, Box<dyn DrawDyn>)>,
+    children: Vec<(Vec2, Box<dyn DrawDyn + 'a>)>,
 }
 
-impl Draw for MeasuredLayout {
+impl<'a> Draw for MeasuredLayout<'a> {
     fn draw(mut self, available_space: Rect, ui: &mut Ui) {
         let calculate_cross_axis =
             |cross_axis_size: f32, element_size: f32| match self.params.cross_axis_alignment {

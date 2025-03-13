@@ -23,45 +23,52 @@ impl eframe::App for App {
                     main_axis_alignment: Alignment::Start,
                     cross_axis_alignment: Alignment::Center,
                 })
-                    .with_child(Text::new(RichText::from("extern_traces").heading()))
-                    .with_child(Text::new(
-                        {
-                            let version = env!("CARGO_PKG_VERSION");
-                            let git_short_sha = "7642d77";
+                .with_child(Text::new(RichText::from("extern_traces").heading()))
+                .with_child(Text::new({
+                    let version = env!("CARGO_PKG_VERSION");
+                    let git_short_sha = "7642d77";
 
-                            format!("v{version} @ {git_short_sha}")
-                        }
+                    format!("v{version} @ {git_short_sha}")
+                }))
+                .with_child(Frame::new(
+                    Layout::new(LayoutParams {
+                        direction: LayoutDirection::Row,
+                        main_axis_alignment: Alignment::Center,
+                        cross_axis_alignment: Alignment::Center,
+                        ..Default::default()
+                    })
+                    .with_child(Frame::new(
+                        Layout::new(LayoutParams {
+                            direction: LayoutDirection::Column,
+                            main_axis_alignment: Alignment::Start,
+                            ..Default::default()
+                        })
+                        .with_child(Text::new(RichText::from("load traces")))
+                        .with_child(LazyMeasuredWidget::new(
+                            egui::Button::new("open"),
+                            Id::new("open"),
+                        )),
                     ))
                     .with_child(Frame::new(
                         Layout::new(LayoutParams {
-                            direction: LayoutDirection::Row,
-                            main_axis_alignment: Alignment::Center,
-                            cross_axis_alignment: Alignment::Center,
+                            direction: LayoutDirection::Column,
+                            main_axis_alignment: Alignment::Start,
                             ..Default::default()
                         })
-                            .with_child(Frame::new(
-                                Layout::new(LayoutParams {
-                                    direction: LayoutDirection::Column,
-                                    main_axis_alignment: Alignment::Start,
-                                    ..Default::default()
-                                })
-                                    .with_child(Text::new(RichText::from("load traces")))
-                                    .with_child(LazyMeasuredWidget::new(egui::Button::new("open"), Id::new("open"))),
-                            ))
-                            .with_child(Frame::new(
-                                Layout::new(LayoutParams {
-                                    direction: LayoutDirection::Column,
-                                    main_axis_alignment: Alignment::Start,
-                                    ..Default::default()
-                                })
-                                    .with_child(Text::new(RichText::from("listen for traces")))
-                                    // .with_child(LazyMeasuredWidget::new(TextEdit::singleline(&mut self.address), Id::new("open")))
-                                .with_child(LazyMeasuredWidget::new(egui::Button::new("listen"), Id::new("listen"))),
-                            ))
-                    ))
-                    .measure(ui.available_size(), ui)
-                    .1
-                    .draw(ui.available_rect_before_wrap(), ui);
+                        .with_child(Text::new(RichText::from("listen for traces")))
+                        .with_child(LazyMeasuredWidget::new(
+                            TextEdit::singleline(&mut self.address),
+                            Id::new("address_input"),
+                        ))
+                        .with_child(LazyMeasuredWidget::new(
+                            egui::Button::new("listen"),
+                            Id::new("listen"),
+                        )),
+                    )),
+                ))
+                .measure(ui.available_size(), ui)
+                .1
+                .draw(ui.available_rect_before_wrap(), ui);
             });
     }
 }
@@ -75,7 +82,9 @@ fn main() -> Result<(), eframe::Error> {
         "extern_traces",
         options,
         Box::new(|cc| {
-            Ok(Box::new(App { address: "".to_string() }))
+            Ok(Box::new(App {
+                address: "".to_string(),
+            }))
         }),
     )?;
 
