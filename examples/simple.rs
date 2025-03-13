@@ -1,10 +1,13 @@
 use eframe::epaint::Margin;
-use egui::{CentralPanel, Context, RichText};
+use egui::{CentralPanel, Context, Id, RichText, TextEdit};
 use egui_layout::layout::{Alignment, Draw, Layout, LayoutDirection, LayoutParams, Measure};
 use egui_layout::widgets::frame::Frame;
+use egui_layout::widgets::lazy::LazyMeasuredWidget;
 use egui_layout::widgets::text::Text;
 
-struct App;
+struct App {
+    address: String,
+}
 
 impl eframe::App for App {
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
@@ -31,21 +34,30 @@ impl eframe::App for App {
                     ))
                     .with_child(Frame::new(
                         Layout::new(LayoutParams {
-                            direction: LayoutDirection::Column,
+                            direction: LayoutDirection::Row,
                             main_axis_alignment: Alignment::Center,
+                            cross_axis_alignment: Alignment::Center,
                             ..Default::default()
                         })
-                            .with_child(Text::new("more text"))
-                            .with_child(Text::new("more text 22")),
-                    ))
-                    .with_child(Frame::new(
-                        Layout::new(LayoutParams {
-                            direction: LayoutDirection::Column,
-                            main_axis_alignment: Alignment::Center,
-                            ..Default::default()
-                        })
-                            .with_child(Text::new("more text"))
-                            .with_child(Text::new("more text 22 hello world rhs")),
+                            .with_child(Frame::new(
+                                Layout::new(LayoutParams {
+                                    direction: LayoutDirection::Column,
+                                    main_axis_alignment: Alignment::Start,
+                                    ..Default::default()
+                                })
+                                    .with_child(Text::new(RichText::from("load traces")))
+                                    .with_child(LazyMeasuredWidget::new(egui::Button::new("open"), Id::new("open"))),
+                            ))
+                            .with_child(Frame::new(
+                                Layout::new(LayoutParams {
+                                    direction: LayoutDirection::Column,
+                                    main_axis_alignment: Alignment::Start,
+                                    ..Default::default()
+                                })
+                                    .with_child(Text::new(RichText::from("listen for traces")))
+                                    // .with_child(LazyMeasuredWidget::new(TextEdit::singleline(&mut self.address), Id::new("open")))
+                                .with_child(LazyMeasuredWidget::new(egui::Button::new("listen"), Id::new("listen"))),
+                            ))
                     ))
                     .measure(ui.available_size(), ui)
                     .1
@@ -63,7 +75,7 @@ fn main() -> Result<(), eframe::Error> {
         "extern_traces",
         options,
         Box::new(|cc| {
-            Ok(Box::new(App))
+            Ok(Box::new(App { address: "".to_string() }))
         }),
     )?;
 

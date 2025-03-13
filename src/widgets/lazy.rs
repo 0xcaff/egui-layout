@@ -6,6 +6,15 @@ pub struct LazyMeasuredWidget<W> {
     id: egui::Id,
 }
 
+impl <W: egui::Widget> LazyMeasuredWidget<W> {
+    pub fn new(widget: W, id: egui::Id) -> Self {
+        Self {
+            id,
+            widget,
+        }
+    }
+}
+
 #[derive(Clone)]
 struct LazyMeasuredWidgetState {
     last_size: Vec2,
@@ -17,7 +26,7 @@ impl<W: egui::Widget> Measure for LazyMeasuredWidget<W> {
     fn measure(self, max_size: Vec2, ui: &Ui) -> (Vec2, Self::Measured) {
         if let Some(widget) = ui
             .ctx()
-            .data(|r| r.get_temp::<LazyMeasuredWidgetState>(ui.id()))
+            .data(|r| r.get_temp::<LazyMeasuredWidgetState>(self.id))
         {
             return (widget.last_size, LazyMeasuredWidgetMeasured {
                 widget: self.widget,
@@ -56,6 +65,3 @@ impl<W: egui::Widget> Draw for LazyMeasuredWidgetMeasured<W> {
         }
     }
 }
-
-// todo: need a way to host regular egui components as children
-// todo: interactive components like buttons and text edit
