@@ -25,18 +25,24 @@ impl<W: egui::Widget> Measure for LazyMeasuredWidget<W> {
             .ctx()
             .data(|r| r.get_temp::<LazyMeasuredWidgetState>(self.id))
         {
-            return (widget.last_size, LazyMeasuredWidgetMeasured {
-                widget: self.widget,
-                id: self.id,
-                skip_render: false,
-            });
+            return (
+                widget.last_size,
+                LazyMeasuredWidgetMeasured {
+                    widget: self.widget,
+                    id: self.id,
+                    skip_render: false,
+                },
+            );
         }
 
-        (max_size, LazyMeasuredWidgetMeasured {
-            widget: self.widget,
-            id: self.id,
-            skip_render: true,
-        })
+        (
+            max_size,
+            LazyMeasuredWidgetMeasured {
+                widget: self.widget,
+                id: self.id,
+                skip_render: true,
+            },
+        )
     }
 }
 
@@ -52,9 +58,12 @@ impl<W: egui::Widget> Draw for LazyMeasuredWidgetMeasured<W> {
         let size = response.rect;
 
         ui.ctx().data_mut(|it| {
-            it.insert_temp(self.id, LazyMeasuredWidgetState {
-                last_size: size.size(),
-            })
+            it.insert_temp(
+                self.id,
+                LazyMeasuredWidgetState {
+                    last_size: size.size(),
+                },
+            )
         });
 
         if self.skip_render {

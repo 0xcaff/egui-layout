@@ -10,7 +10,7 @@ trait DrawDyn {
 
 impl<T> DrawDyn for T
 where
-    T: Draw
+    T: Draw,
 {
     fn draw(self: Box<Self>, region: Rect, ui: &mut Ui) {
         (*self).draw(region, ui);
@@ -164,10 +164,13 @@ impl<'a> Measure for Layout<'a> {
             ),
         };
 
-        (bounding_box, MeasuredLayout {
-            params: self.params,
-            children: measured_children,
-        })
+        (
+            bounding_box,
+            MeasuredLayout {
+                params: self.params,
+                children: measured_children,
+            },
+        )
     }
 }
 

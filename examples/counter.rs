@@ -41,10 +41,16 @@ impl eframe::App for App {
 
                 ui.label(status);
 
-                if ui.add_enabled(!disabled, egui::Button::new("Increment Counter 1")).clicked() {
+                if ui
+                    .add_enabled(!disabled, egui::Button::new("Increment Counter 1"))
+                    .clicked()
+                {
                     self.counter1 += 1;
                 }
-                if ui.add_enabled(!disabled, egui::Button::new("Increment Counter 2")).clicked() {
+                if ui
+                    .add_enabled(!disabled, egui::Button::new("Increment Counter 2"))
+                    .clicked()
+                {
                     self.counter2 += 1;
                 }
             });
@@ -56,13 +62,7 @@ fn main() -> Result<(), eframe::Error> {
         ..Default::default()
     };
 
-    eframe::run_native(
-        "button",
-        options,
-        Box::new(|cc| {
-            Ok(Box::new(App::new()))
-        }),
-    )?;
+    eframe::run_native("button", options, Box::new(|cc| Ok(Box::new(App::new()))))?;
 
     Ok(())
 }
