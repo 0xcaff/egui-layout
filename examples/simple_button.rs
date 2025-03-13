@@ -26,9 +26,7 @@ impl eframe::App for App {
                     self.counter += 1;
                 }
 
-                for i in 0..self.counter {
-                    ui.label(format!("hello {}", i));
-                }
+                ui.label(format!("hello {}", self.counter));
             });
     }
 }
